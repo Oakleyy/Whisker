@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+<?import javafx.scene.media.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <MediaView fitHeight="200.0" fitWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+   <bottom>
+      <HBox prefHeight="35.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" text="Play" />
+            <Separator orientation="VERTICAL" prefHeight="25.0" prefWidth="25.0" />
+            <Slider>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </Slider>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="0:00/0:00">
+               <HBox.margin>
+                  <Insets top="5.0" />
+               </HBox.margin>
+            </Text>
+            <Separator orientation="VERTICAL" prefHeight="26.0" prefWidth="25.0" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Volume">
+               <HBox.margin>
+                  <Insets top="5.0" />
+               </HBox.margin></Text>
+            <Slider>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
+            </Slider>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>

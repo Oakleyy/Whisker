@@ -1,0 +1,51 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply from: 'http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin'
+
+repositories {
+    mavenCentral() 
+}
+
+dependencies {
+    compile 'org.apache.logging.log4j:log4j-api:2.3'
+    compile 'org.apache.logging.log4j:log4j-core:2.3'
+    compile 'org.yaml:snakeyaml:1.16'
+    compile 'com.pi4j:pi4j-core:1.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
+compileJava {
+    targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+}
+
+javafx {
+	//javaRuntime = '/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk'
+
+    appID 'whisker'
+    appName 'Whisker'
+    
+    mainClass 'ninja.oakley.whisker.stepper.StepperMotorTest'
+    
+    jvmArgs = ['-XX:+AggressiveOpts', '-XX:CompileThreshold=1']
+    systemProperties = ['prism.disableRegionCaching':'true']
+    arguments = ['-l', '--fast']
+}
+
+eclipse {
+  classpath {
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}
