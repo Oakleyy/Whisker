@@ -1,6 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply from: 'http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin'
+apply from: 'https://docs.google.com/uc?authuser=1&id=0BypTuA49s37gU2VtX0VCdmhqSWM&export=download'
 
 repositories {
     mavenCentral() 
@@ -36,7 +36,7 @@ javafx {
     appID 'whisker'
     appName 'Whisker'
     
-    mainClass 'ninja.oakley.whisker.stepper.StepperMotorTest'
+    mainClass 'ninja.oakley.whisker.Whisker'
     
     jvmArgs = ['-XX:+AggressiveOpts', '-XX:CompileThreshold=1']
     systemProperties = ['prism.disableRegionCaching':'true']

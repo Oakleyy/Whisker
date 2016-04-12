@@ -6,6 +6,12 @@ import javafx.scene.image.Image;
 
 public class Movie implements Media {
 
+    private final Path path;
+
+    public Movie(Path path){
+        this.path = path;
+    }
+
     @Override
     public String getName() {
         // TODO Auto-generated method stub
@@ -14,8 +20,7 @@ public class Movie implements Media {
 
     @Override
     public Path getPath() {
-        // TODO Auto-generated method stub
-        return null;
+        return path;
     }
 
     @Override

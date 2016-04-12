@@ -1,7 +1,6 @@
 package ninja.oakley.whisker.menu;
 
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -37,10 +36,6 @@ public class MenuSceneController extends AbstractController<VBox> {
         updateTilePane();
     }
 
-    @Override
-    public void closeWindow() {
-
-    }
 
     public void setStatus(String st){
         status.setText(st);
@@ -52,19 +47,13 @@ public class MenuSceneController extends AbstractController<VBox> {
     }
     
     public void updateTilePane(){
-        ImageView a = new ImageView(new Image("file:pj.png"));
-        ImageView b = new ImageView(new Image("file:creed.png"));
-        ImageView c = new ImageView(new Image("file:dino.png"));
-        ImageView d = new ImageView(new Image("file:goose.png"));
-        ImageView e = new ImageView(new Image("file:peanuts.png"));
-        ImageView f = new ImageView(new Image("file:spec.png"));
+        ImageView a = new ImageView(new Image("file:/home/pi/whisker/pj.png"));
+        ImageView b = new ImageView(new Image("file:/home/pi/whisker/creed.png"));
+        ImageView c = new ImageView(new Image("file:/home/pi/whisker/dino.png"));
+        ImageView d = new ImageView(new Image("file:/home/pi/whisker/goose.png"));
+        ImageView e = new ImageView(new Image("file:/home/pi/whisker/peanuts.png"));
+        ImageView f = new ImageView(new Image("file:/home/pi/whisker/spec.png"));
         tilePane.getChildren().addAll(a, b, c, d, e, f);
-    }
-
-    @Override
-    public void openWindow() {
-        // TODO Auto-generated method stub
-
     }
 
 }

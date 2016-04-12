@@ -12,30 +12,29 @@ public abstract class AbstractController<T> implements Initializable, Controller
 
     private T rootNode;
     private Scene scene;
-    
+
     public final T getRootNode() {
         return rootNode;
     }
-    
+
     public final Scene getScene(){
         return scene;
     }
 
     public abstract String getFileName();
-    
+
     public final void load() throws IOException {
         FXMLLoader loader = loadFxmlFile(getFileName());
         setController(loader, this);
-        //loader.setController(this);
-        
+
         rootNode = loader.load();
         scene = new Scene((Parent) rootNode);
     }
-    
+
     public boolean isLoaded(){
         return (rootNode != null);
     }
-    
+
 
     /**
      * Get the FXMLLoader for a specific file
