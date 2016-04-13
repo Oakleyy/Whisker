@@ -9,7 +9,7 @@ repositories {
 dependencies {
     compile 'org.apache.logging.log4j:log4j-api:2.3'
     compile 'org.apache.logging.log4j:log4j-core:2.3'
-    compile 'org.yaml:snakeyaml:1.16'
+	compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.pi4j:pi4j-core:1.0'
 }
 
