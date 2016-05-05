@@ -17,4 +17,10 @@ public class TelevisionSubMenu implements SubMenu {
         return "Television";
     }
 
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

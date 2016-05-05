@@ -21,23 +21,25 @@ public final class WhiskerPlayer {
         status = Status.READY;
     }
 
-    public void play() throws IOException{
+    public void play() throws IOException {
         switch(status){
             case LOADING:
             case PLAYING:
                 break;
             case PAUSED:
-                executeAction(Action.PLAY);
+                executeAction(PlayerAction.PLAY);
                 break;
             case READY:
                 prepareMovie();
                 break;
+            case DISPOSED:
+                throw new RuntimeException("Movie disposed."); 
             case UNKNOWN:
             default:
                 throw new RuntimeException("Unknown Movie State.");  
         }
     }
-    
+
     public void pause() throws IOException{
         switch(status){
             case LOADING:
@@ -45,21 +47,32 @@ public final class WhiskerPlayer {
                 break;
             case PAUSED:
             case PLAYING:
-                executeAction(Action.PAUSE);
+                executeAction(PlayerAction.PAUSE);
                 break;
+            case DISPOSED:
+                throw new RuntimeException("Movie disposed."); 
             case UNKNOWN:
             default:
                 throw new RuntimeException("Unknown Movie State.");  
         }
     }
     
+    public void dispose(){
+        process.destroy();
+        this.status = Status.DISPOSED;
+    }
+
+    public Status getStatus(){
+        return this.status;
+    }
+
     private void prepareMovie(){
         status = Status.LOADING;
         process = executeCommand(buildMovie());
         status = Status.PLAYING;
     }
 
-    private void executeAction(Action action) throws IOException {
+    private void executeAction(PlayerAction action) throws IOException {
         switch(action){
             case PAUSE:
             case PLAY:
@@ -89,7 +102,7 @@ public final class WhiskerPlayer {
 
         return p;
     }
-    
+
     private void writeKey(char c) throws IOException {
         process.getOutputStream().write(c);
         process.getOutputStream().flush();
@@ -136,18 +149,14 @@ public final class WhiskerPlayer {
             return this.keyword;
         }
     }
-    
-    private enum Action {
-        PAUSE,
-        PLAY;
-    }
 
     public enum Status {
         LOADING,
         PLAYING,
         PAUSED,
         READY,
-        UNKNOWN;
+        UNKNOWN,
+        DISPOSED;
     }
 
 }

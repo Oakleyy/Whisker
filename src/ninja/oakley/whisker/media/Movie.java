@@ -5,47 +5,12 @@ import java.util.UUID;
 
 import javafx.scene.image.Image;
 
-public class Movie implements Media {
+public class Movie extends AbstractMedia {
 
-    private String name;
-    private Path path;
-    private UUID uniqueId;
-
-    public Movie(){
-        
+    public Movie(Path path) {
+        super(path);
     }
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
 
-    @Override
-    public Path getPath() {
-        return this.path;
-    }
-
-    @Override
-    public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getAuthor() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Image getCoverImage() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public UUID getUniqueId() {
-        return this.uniqueId;
-    }
 
 }
