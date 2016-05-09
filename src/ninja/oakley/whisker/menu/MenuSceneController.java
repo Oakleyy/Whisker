@@ -38,24 +38,6 @@ public class MenuSceneController extends AbstractController<VBox> {
         tilePane.setHgap(8.0);
         tilePane.setVgap(8.0);
         tilePane.setAlignment(Pos.CENTER);
-
-
-        initMedia();
-
-        //moveCursor(0, 0);
-
-    }
-
-    private void initMedia(){
-        String base = "/Users/oakley/Documents/workspace/Whisker/";
-
-        MediaImageView a = new MediaImageView(new Movie(Paths.get(base + "pj.png")));
-        MediaImageView b = new MediaImageView(new Movie(Paths.get(base + "creed.png")));
-        MediaImageView c = new MediaImageView(new Movie(Paths.get(base + "dino.png")));
-        MediaImageView d = new MediaImageView(new Movie(Paths.get(base + "goose.png")));
-        MediaImageView e = new MediaImageView(new Movie(Paths.get(base + "peanuts.png")));
-        MediaImageView f = new MediaImageView(new Movie(Paths.get(base + "spec.png")));
-        tilePane.getChildren().addAll(a, b, c, d, e, f);
     }
 
     public void initScene(){
@@ -156,17 +138,9 @@ public class MenuSceneController extends AbstractController<VBox> {
         try {
             return (int) getField(tilePane, "actualRows");
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return -1;
     }
@@ -175,17 +149,9 @@ public class MenuSceneController extends AbstractController<VBox> {
         try {
             return (int) getField(tilePane, "actualColumns");
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return -1;
     }

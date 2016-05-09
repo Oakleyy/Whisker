@@ -1,10 +1,8 @@
 package ninja.oakley.whisker;
 
-import com.pi4j.io.gpio.RaspiPin;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
-import ninja.oakley.whisker.menu.JoystickController;
+import ninja.oakley.whisker.media.USBMountingService;
 import ninja.oakley.whisker.menu.MenuSceneController;
 
 public class Whisker extends Application {
@@ -20,7 +18,8 @@ public class Whisker extends Application {
 
         menuSceneController = new MenuSceneController();
 
-        JoystickController controller = new JoystickController(RaspiPin.GPIO_21, RaspiPin.GPIO_22, RaspiPin.GPIO_23, RaspiPin.GPIO_24);
+        //JoystickController controller = new JoystickController(RaspiPin.GPIO_21, RaspiPin.GPIO_22, RaspiPin.GPIO_23, RaspiPin.GPIO_24);
+        USBMountingService service = new USBMountingService();
         
     }
 
