@@ -9,9 +9,9 @@ repositories {
 dependencies {
     compile 'org.apache.logging.log4j:log4j-api:2.3'
     compile 'org.apache.logging.log4j:log4j-core:2.3'
-	compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.pi4j:pi4j-core:1.0'
     compile 'com.pi4j:pi4j-device:1.0'
+    compile 'org.apache.commons:commons-configuration2:2.0'
 }
 
 sourceSets {

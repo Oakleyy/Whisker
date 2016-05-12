@@ -2,48 +2,111 @@ package ninja.oakley.whisker.media;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ninja.oakley.whisker.Whisker;
+
 public class USBMountingService {
 
-    
+    private static final Logger logger = LogManager.getLogger(Whisker.class);
+
+    private final Whisker whisker;
+
     private final Map<String, Drive> mounted;
     private final Service service;
 
-    public USBMountingService(){
+    public USBMountingService(Whisker whisker){
+        this.whisker = whisker;
         this.service = new Service();
         this.mounted = new HashMap<>();
+    }
+
+    private synchronized void mount(Drive drive) throws IOException {
+        StringBuilder sb = new StringBuilder("mount");
+        sb.append(" -o uid=").append(whisker.getConfiguration().getSystemUser());
+        sb.append(" -o gid=").append(whisker.getConfiguration().getSystemGroup());
+        sb.append(" -t vfat ");
+        sb.append(drive.getPartition());
+        sb.append(" /mnt/").append(drive.getUniqueId());
+
+        ProcessBuilder builder = new ProcessBuilder(sb.toString());
+        builder.redirectErrorStream(true);
+
+        Process process = builder.start();
+        List<String> rt = readInputStream(process.getInputStream(), true); 
+
+        if(!rt.isEmpty()){
+            throw new RuntimeException("Error with mounting drive: " + Arrays.toString(rt.toArray()));
+        }
+
+        mounted.put(drive.getUniqueId(), drive);
+    }
+
+    private synchronized void umount(Drive drive) throws IOException {
+        StringBuilder sb = new StringBuilder("umount");
+        sb.append(" /mnt/").append(drive.getUniqueId());
+
+        ProcessBuilder builder = new ProcessBuilder(sb.toString());
+        builder.redirectErrorStream(true);
+
+        Process process = builder.start();
+        List<String> rt = readInputStream(process.getInputStream(), true); 
+
+        if(!rt.isEmpty()){
+            throw new RuntimeException("Error with unmounting drive: " + Arrays.toString(rt.toArray()));
+        }
+
+        mounted.remove(drive.getUniqueId());
+    }
+
+    public void startService(){
+        if(service.isAlive()) throw new RuntimeException("USBMountingService is already running.");
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(service);
     }
 
-    private void mount(Drive drive){
-        
+    public void killService(){
+        if(!service.isAlive()) throw new RuntimeException("USBMountingService isn't running.");
+        service.kill();
     }
-    
+
     private List<String> requestData() throws IOException{
         ProcessBuilder builder = new ProcessBuilder("blkid");
         builder.redirectErrorStream(true);
-        
-        Process process = builder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
+        Process process = builder.start();
+
+        List<String> rt = readInputStream(process.getInputStream(), true); 
+        process.destroy();
+
+        return rt;
+    }
+
+    private List<String> readInputStream(InputStream stream, boolean close) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         List<String> rt = new ArrayList<>();
+
         String line = reader.readLine();
         while (line != null) {
             rt.add(line);
             line = reader.readLine();
         }
-        
-        process.destroy();
-        reader.close();
+
+        if(close){
+            reader.close();
+        }
 
         return rt;
     }
@@ -62,12 +125,13 @@ public class USBMountingService {
         public String getPartition(){
             return this.partition;
         }
-        
+
         public String getUniqueId(){
             String id = data.get("UUID");
             if(id == null || id.isEmpty()){
                 throw new RuntimeException("No id found for drive mounted at " + partition);
             }
+
             return id;
         }
 
@@ -82,7 +146,6 @@ public class USBMountingService {
             for(String s : data){
                 String[] d = s.split("=");
                 rt.put(d[0].toUpperCase().trim(), d[1].substring(1, d[1].length()));
-
             }
 
             return rt;
@@ -94,33 +157,46 @@ public class USBMountingService {
     private class Service implements Runnable {
 
         private boolean alive = true;
-        
+
         @Override
         public void run() {
             while(alive)
-            try {
-                List<String> data = requestData();
-                
-                for(String st : data){
-                    Drive d = new Drive(st);
-                    if(!mounted.containsKey(d.getUniqueId())){
-                        
+                try {
+                    List<String> data = requestData();
+                    Map<String, Drive> drives = new HashMap<>();
+
+                    for(String st : data){
+                        Drive d = new Drive(st);
+                        drives.put(d.getUniqueId(), d);
                     }
+
+                    for(String st : mounted.keySet()){
+                        if(!mounted.containsKey(st)){
+                            umount(mounted.get(st));
+                        }
+                    }
+
+                    for(String st : drives.keySet()){
+                        if(!mounted.containsKey(st)){
+                            mount(drives.get(st));
+                        }
+                    }
+
+                    Thread.sleep(30000);
+                } catch (IOException e) {
+                    kill();
+                    logger.error("USBMountingService has stopped due to an error: " + e.getMessage());
+                } catch (InterruptedException e) {
+                    logger.info("USBMountingService has stopped");
                 }
-                
-            } catch (IOException e) {
-                
-                //TODO logging
-            }
         }
-        
+
         public boolean isAlive(){
             return alive;
         }
-        
+
         public void kill(){
             this.alive = false;
         }
-
     }
 }

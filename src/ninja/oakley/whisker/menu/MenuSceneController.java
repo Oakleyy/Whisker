@@ -18,8 +18,11 @@ import javafx.scene.layout.VBox;
 import ninja.oakley.whisker.AbstractController;
 import ninja.oakley.whisker.media.Media;
 import ninja.oakley.whisker.media.Movie;
+import ninja.oakley.whisker.menu.JoystickController.JoystickListener;
 
 public class MenuSceneController extends AbstractController<VBox> {
+
+    private final JoystickTest joystick = new JoystickTest();
 
     @FXML private TilePane tilePane;
 
@@ -33,6 +36,8 @@ public class MenuSceneController extends AbstractController<VBox> {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
         setStatus("");
         subMenuList.getItems().add(MovieSubMenu.getSubMenu());
         tilePane.setHgap(8.0);
@@ -55,7 +60,7 @@ public class MenuSceneController extends AbstractController<VBox> {
                         default: break;
                     }
                 } catch(IndexOutOfBoundsException e){
-                    System.out.println(e.getMessage());
+
                 }
             }
         });
@@ -103,7 +108,7 @@ public class MenuSceneController extends AbstractController<VBox> {
         if(!checkPoint(x, y)){
             throw new IndexOutOfBoundsException("Out of coordinate range.");
         }
-        System.out.println(x + "_" + y);
+
         if(currentSelection != null){
             int prevIndex = getIndex((int) currentSelection.getX(), (int) currentSelection.getY());
             MediaImageView prevImage = (MediaImageView) tilePane.getChildren().get(prevIndex);
@@ -161,6 +166,21 @@ public class MenuSceneController extends AbstractController<VBox> {
         field.setAccessible(true);
 
         return field.get(obj);
+    }
+
+    public JoystickTest getJoystickListener(){
+        return this.joystick;
+    }
+
+    private class JoystickTest implements JoystickListener {
+
+        @Override
+        public void execute(Direction dir) {
+            if(getRootNode().isVisible()){
+                moveCursor(dir);
+            }
+        }
+
     }
 
     @Override
