@@ -1,4 +1,4 @@
-package ninja.oakley.whisker.menu;
+package ninja.oakley.whisker.hardware;
 
 public enum Direction {
     RIGHT,

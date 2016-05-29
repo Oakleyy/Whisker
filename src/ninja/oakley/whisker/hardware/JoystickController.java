@@ -1,4 +1,4 @@
-package ninja.oakley.whisker.menu;
+package ninja.oakley.whisker.hardware;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,8 @@ public class JoystickController {
 
     private void initDirection(Pin pin, Direction dir){
         GpioPinDigitalInput in = gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_DOWN);
-
+        pins.add(in);
+        
         in.addListener(gpioListener);
         gpioListener.addDirection(pin, dir);
     }

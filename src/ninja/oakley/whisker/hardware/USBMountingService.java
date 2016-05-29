@@ -1,9 +1,11 @@
-package ninja.oakley.whisker.media;
+package ninja.oakley.whisker.hardware;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +33,27 @@ public class USBMountingService {
         this.service = new Service();
         this.mounted = new HashMap<>();
     }
+    
+    public List<Drive> getMountedDrives(){
+        return new ArrayList<>(mounted.values());
+    }
+    
+    public Drive getDrive(String uuid){
+        return mounted.get(uuid);
+    }
+    
+    public void startService(){
+        if(service.isAlive()) throw new RuntimeException("USBMountingService is already running.");
 
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(service);
+    }
+
+    public void killService(){
+        if(!service.isAlive()) throw new RuntimeException("USBMountingService isn't running.");
+        service.kill();
+    }
+    
     private synchronized void mount(Drive drive) throws IOException {
         StringBuilder sb = new StringBuilder("mount");
         sb.append(" -o uid=").append(whisker.getConfiguration().getSystemUser());
@@ -69,19 +91,7 @@ public class USBMountingService {
 
         mounted.remove(drive.getUniqueId());
     }
-
-    public void startService(){
-        if(service.isAlive()) throw new RuntimeException("USBMountingService is already running.");
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(service);
-    }
-
-    public void killService(){
-        if(!service.isAlive()) throw new RuntimeException("USBMountingService isn't running.");
-        service.kill();
-    }
-
+    
     private List<String> requestData() throws IOException{
         ProcessBuilder builder = new ProcessBuilder("blkid");
         builder.redirectErrorStream(true);
@@ -107,11 +117,10 @@ public class USBMountingService {
         if(close){
             reader.close();
         }
-
         return rt;
     }
 
-    private class Drive {
+    public class Drive {
 
         private final String partition;
         private final Map<String, String> data;
@@ -124,6 +133,10 @@ public class USBMountingService {
 
         public String getPartition(){
             return this.partition;
+        }
+        
+        public Path getPath(){
+            return Paths.get("/mnt/" + getUniqueId());
         }
 
         public String getUniqueId(){
@@ -147,11 +160,8 @@ public class USBMountingService {
                 String[] d = s.split("=");
                 rt.put(d[0].toUpperCase().trim(), d[1].substring(1, d[1].length()));
             }
-
             return rt;
         }
-
-
     }
 
     private class Service implements Runnable {

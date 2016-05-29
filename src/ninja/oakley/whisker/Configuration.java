@@ -1,53 +1,50 @@
 package ninja.oakley.whisker;
 
-import org.apache.commons.configuration2.XMLConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.builder.fluent.XMLBuilderParameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
+import java.util.ArrayList;
+import java.util.List;
+
+import ninja.oakley.whisker.media.Media;
+import ninja.oakley.whisker.menu.Library;
 
 public final class Configuration {
+    
+    private final DatabaseController databaseController;
 
-    private final long timeAccessed;
+    private final String systemUser = "pi";
+    private final String systemGroup = "pi";
 
-    private final String systemUser;
-    private final String systemGroup;
+    private final List<Library> libraries;
+    private final List<Media> media;
 
-    public Configuration() throws ConfigurationException {
-        XMLConfiguration config = loadConfiguration();
-        this.timeAccessed = System.currentTimeMillis();
-        this.systemUser = config.getString("systemUser", "pi");
-        this.systemGroup = config.getString("systemGroup", "pi");
+    public Configuration() {
+        this.databaseController = new DatabaseController();
+        this.media = new ArrayList<>();
+        this.libraries = new ArrayList<>();
     }
     
+    public void saveMedia(Media m){
+        media.add(m);
+        databaseController.addMedia(m);
+    }
+    
+    public void deleteMedia(Media m){
+    }
+    
+    public void getMedia(){
+        media.addAll(databaseController.getMediaList());
+    }
+    
+    public void updateMedia(){
+        databaseController.updateAllMedia(media);
+    }
+
     public String getSystemUser(){
         return this.systemUser;
     }
-    
+
     public String getSystemGroup(){
         return this.systemGroup;
     }
-    
-    public long getTimeAccessed(){
-        return this.timeAccessed;
-    }
 
-    private XMLConfiguration loadConfiguration() throws ConfigurationException {
-        Parameters params = new Parameters();
-        
-        XMLBuilderParameters xmlParams = params.xml()
-                .setThrowExceptionOnMissing(true)
-                .setValidating(true)
-                .setEncoding("UTF-8")
-                .setFileName("config.xml")
-                .setExpressionEngine(new XPathExpressionEngine());
-        
-        FileBasedConfigurationBuilder<XMLConfiguration> builder =
-                new FileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
-                .configure(xmlParams);
-        
-        XMLConfiguration config = builder.getConfiguration();
-        return config;
-    }
+
 }

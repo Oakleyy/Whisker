@@ -1,6 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply from: 'https://docs.google.com/uc?authuser=1&id=0BypTuA49s37gU2VtX0VCdmhqSWM&export=download'
+
+version = '1.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral() 
@@ -11,7 +14,19 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-core:2.3'
     compile 'com.pi4j:pi4j-core:1.0'
     compile 'com.pi4j:pi4j-device:1.0'
-    compile 'org.apache.commons:commons-configuration2:2.0'
+    compile 'org.mongodb:mongodb-driver:3.2.2'
+}
+
+jar {
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    
+        manifest {
+        attributes("Main-Class": "ninja.oakley.whisker.Whisker" )
+    }
 }
 
 sourceSets {
@@ -24,24 +39,6 @@ sourceSets {
             srcDir 'resources'
         }
     }
-}
-
-compileJava {
-    targetCompatibility = 1.8
-    sourceCompatibility = 1.8
-}
-
-javafx {
-	//javaRuntime = '/Library/Java/JavaVirtualMachines/jdk1.8.0_51.jdk'
-
-    appID 'whisker'
-    appName 'Whisker'
-    
-    mainClass 'ninja.oakley.whisker.Whisker'
-    
-    jvmArgs = ['-XX:+AggressiveOpts', '-XX:CompileThreshold=1']
-    systemProperties = ['prism.disableRegionCaching':'true']
-    arguments = ['-l', '--fast']
 }
 
 eclipse {

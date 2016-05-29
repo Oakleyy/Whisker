@@ -1,24 +1,26 @@
 package ninja.oakley.whisker.menu;
 
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import ninja.oakley.whisker.media.Media;
 
 public class MediaImageView extends ImageView {
 
-    private final static String CSS_CLASS = "sel";
+    private final static DropShadow ds = new DropShadow(20, Color.CORNFLOWERBLUE);
 
     private final Media media;
 
     public MediaImageView(Media media){
-        super(media.getCoverImage());
+        super(media.getMediaMetadata().getCoverImage());
         this.media = media;
     }
 
-    public void applyCSS(boolean value){
+    public void applyEffect(boolean value){
         if(value){
-            this.getStyleClass().add(CSS_CLASS);
+            this.setEffect(ds);
         } else {
-            this.getStyleClass().remove(CSS_CLASS);
+            this.setEffect(null);
         }
     }
 

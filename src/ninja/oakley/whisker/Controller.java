@@ -4,6 +4,13 @@ import java.io.IOException;
 
 import javafx.scene.Scene;
 
+/**
+ * Controller is an interface for loading and interacting with an fxml controller.
+ * 
+ * @author oakley
+ *
+ * @param <T>
+ */
 public interface Controller<T> {
 
     /**
@@ -23,7 +30,7 @@ public interface Controller<T> {
     /**
      * Get the name of the file for loading the FXML.
      * 
-     * @return string representing the filename in resources/javafx/
+     * @return string representing the filename (and extension) in resources/javafx/
      */
     public String getFileName();
 

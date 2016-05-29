@@ -1,4 +1,4 @@
-package ninja.oakley.whisker.stepper;
+package ninja.oakley.whisker.hardware;
 
 import com.pi4j.component.motor.MotorState;
 import com.pi4j.component.motor.impl.GpioStepperMotorComponent;
@@ -28,6 +28,7 @@ public class StepperMotorController {
         gpio.setShutdownOptions(true, PinState.LOW, gpioPins);
         motor.setStepInterval(2);
         motor.setStepsPerRevolution(2038);
+        motor.setStepSequence(StepSequence.getDefault().getSequence());
     }
 
     public void setMotorState(MotorState state){
@@ -61,6 +62,10 @@ public class StepperMotorController {
 
         public byte[] getSequence(){
             return seq;
+        }
+        
+        public static StepSequence getDefault(){
+            return SINGLE_STEP;
         }
     }
 

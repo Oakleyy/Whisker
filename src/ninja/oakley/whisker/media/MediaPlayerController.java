@@ -3,6 +3,9 @@ package ninja.oakley.whisker.media;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -13,13 +16,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import ninja.oakley.whisker.AbstractController;
+import ninja.oakley.whisker.hardware.Direction;
+import ninja.oakley.whisker.hardware.JoystickController.JoystickListener;
 import ninja.oakley.whisker.media.WhiskerPlayer.Status;
-import ninja.oakley.whisker.menu.Direction;
-import ninja.oakley.whisker.menu.JoystickController.JoystickListener;
 
 public class MediaPlayerController extends AbstractController<AnchorPane> {
 
     private final JoystickListener joystick;
+    private final ScheduledExecutorService executor;
 
     private Animation transition;
     private boolean visible = true;
@@ -34,11 +38,12 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
     private WhiskerPlayer player;
 
     public MediaPlayerController(){
+        this.executor = Executors.newScheduledThreadPool(1);
         this.joystick = new JoystickTest();
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void init() {
         transition = new FadeTransition(Duration.millis(3000), this.getRootNode());
     }
 
@@ -47,10 +52,20 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
         return "ControlMenu.fxml";
     }
 
+    /**
+     * Check if the controller is currently housing a media player
+     * 
+     * @return
+     */
     public boolean isRunning(){
         return (this.player != null && this.player.getStatus() != Status.DISPOSED);
     }
 
+    /**
+     * Changes the transparency of the node. Basically, it will change if you can see the status of the movie (play, seek, etc.).
+     * 
+     * @param status
+     */
     private synchronized void setVisible(boolean status){
         if(status == !visible){
             FadeTransition t = (FadeTransition) transition;
@@ -66,13 +81,20 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
         }
     }
 
+    /**
+     * 
+     * 
+     * @return
+     */
     public boolean isVisible(){
         return visible;
     }
 
-    public void preparePlayer(WhiskerPlayer player){
+    public void preparePlayer(WhiskerPlayer player) throws IOException {
         if(isPlayerFree()){
             this.player = player;
+            System.out.println("Made it");
+            //player.play();
         } else {
             throw new RuntimeException("Player isn't free.");
         }
@@ -84,6 +106,17 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
 
     public JoystickListener getJoystickListener(){
         return this.joystick;
+    }
+    
+    private void startFadeSequence(){
+        setVisible(true);
+        executor.schedule(new Runnable(){ 
+            @Override
+            public void run() {
+                setVisible(false);
+                
+            }
+        }, 5, TimeUnit.SECONDS);
     }
 
     private class JoystickTest implements JoystickListener {
@@ -112,8 +145,9 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
                         break;
                     default:
                         throw new RuntimeException("No such direction.");
-
                 }
+                
+                startFadeSequence();
             }
         }
     }

@@ -56,7 +56,7 @@ public final class WhiskerPlayer {
                 throw new RuntimeException("Unknown Movie State.");  
         }
     }
-    
+
     public void dispose(){
         process.destroy();
         this.status = Status.DISPOSED;
@@ -75,6 +75,7 @@ public final class WhiskerPlayer {
     private void executeAction(PlayerAction action) throws IOException {
         switch(action){
             case PAUSE:
+                writeKey('p');
             case PLAY:
                 writeKey('p');
             default:
