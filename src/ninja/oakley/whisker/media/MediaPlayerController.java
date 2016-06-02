@@ -1,5 +1,6 @@
 package ninja.oakley.whisker.media;
 
+import java.awt.AWTException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -9,10 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import ninja.oakley.whisker.AbstractController;
@@ -22,7 +25,6 @@ import ninja.oakley.whisker.media.WhiskerPlayer.Status;
 
 public class MediaPlayerController extends AbstractController<AnchorPane> {
 
-    private final JoystickListener joystick;
     private final ScheduledExecutorService executor;
 
     private Animation transition;
@@ -39,12 +41,25 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
 
     public MediaPlayerController(){
         this.executor = Executors.newScheduledThreadPool(1);
-        this.joystick = new JoystickTest();
     }
 
     @Override
     public void init() {
         transition = new FadeTransition(Duration.millis(3000), this.getRootNode());
+
+        getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                switch (event.getCode()) {
+                    case SPACE:
+                    
+                    case ESCAPE:
+                        player.dispose();
+                        
+                    default: break;
+                }
+            }
+        });
     }
 
     @Override
@@ -81,11 +96,6 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
         }
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public boolean isVisible(){
         return visible;
     }
@@ -104,52 +114,14 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
         return player == null || player.getStatus() == Status.DISPOSED;
     }
 
-    public JoystickListener getJoystickListener(){
-        return this.joystick;
-    }
-    
     private void startFadeSequence(){
-        setVisible(true);
         executor.schedule(new Runnable(){ 
             @Override
             public void run() {
                 setVisible(false);
-                
+
             }
         }, 5, TimeUnit.SECONDS);
-    }
-
-    private class JoystickTest implements JoystickListener {
-
-        @Override
-        public void execute(Direction dir) {
-            if(getRootNode().isVisible() && isRunning()){
-                switch(dir){
-                    case BOTTOM:
-                        try {
-                            player.pause();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case LEFT:
-                        break;
-                    case RIGHT:
-                        break;
-                    case TOP:
-                        try {
-                            player.play();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    default:
-                        throw new RuntimeException("No such direction.");
-                }
-                
-                startFadeSequence();
-            }
-        }
     }
 
 }

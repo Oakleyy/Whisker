@@ -1,4 +1,4 @@
-package ninja.oakley.whisker.media;
+package ninja.oakley.whisker;
 
 import org.bson.Document;
 

@@ -8,6 +8,8 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import javafx.scene.image.Image;
+import ninja.oakley.whisker.Documentable;
+import ninja.oakley.whisker.DocumentableFactory;
 
 public class Media implements Documentable {
 
@@ -40,20 +42,10 @@ public class Media implements Documentable {
         return this.meta;
     }
 
+    @Override
     public ObjectId getUniqueId() {
         return this.uniqueId;
     }
-    
-    
-    public enum MediaType{
-        MOVIE,
-        TELEVISION,
-        MUSIC,
-        PHOTO,
-        UNKNOWN;
-      
-    }
-
 
     @Override
     public Document toDocument() {
@@ -63,8 +55,12 @@ public class Media implements Documentable {
                 .append("path", getPath().toString());
     }
     
-    public Media fromDocument(Document d){
-        return new Media(d);
+    public static class MediaFactory implements DocumentableFactory<Media> {
+
+        @Override
+        public Media newInstance(Document d) {
+            return new Media(d);
+        }
     }
     
 }
