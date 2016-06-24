@@ -1,12 +1,10 @@
-package ninja.oakley.whisker;
+package ninja.oakley.whisker.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ninja.oakley.whisker.media.Media;
 import ninja.oakley.whisker.media.Media.MediaFactory;
-import ninja.oakley.whisker.menu.Library;
-import ninja.oakley.whisker.menu.Library.LibraryFactory;
 
 public final class Configuration {
     

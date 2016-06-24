@@ -96,20 +96,35 @@ public class MediaPlayerController extends AbstractController<AnchorPane> {
         }
     }
 
+    /**
+     * Check if the media controls are visible.
+     * 
+     * @return
+     */
     public boolean isVisible(){
         return visible;
     }
 
+    /**
+     * Prepare the player for playing a media file.
+     * 
+     * @param player
+     * @throws IOException
+     */
     public void preparePlayer(WhiskerPlayer player) throws IOException {
         if(isPlayerFree()){
             this.player = player;
-            System.out.println("Made it");
-            //player.play();
+            player.play();
         } else {
             throw new RuntimeException("Player isn't free.");
         }
     }
 
+    /**
+     * Check if the player is currently playing a media file.
+     * 
+     * @return
+     */
     public boolean isPlayerFree(){
         return player == null || player.getStatus() == Status.DISPOSED;
     }

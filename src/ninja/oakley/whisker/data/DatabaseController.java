@@ -1,4 +1,4 @@
-package ninja.oakley.whisker;
+package ninja.oakley.whisker.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +7,16 @@ import org.bson.Document;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOptions;
 
-import ninja.oakley.whisker.media.Media;
-
+/**
+ * Used to tput entriers inside of a database for easy access.
+ * 
+ * @author oakley
+ *
+ * @param <T> documentable type
+ * @param <T1> document factory for type t
+ */
 public class DatabaseController<T extends Documentable, T1 extends DocumentableFactory<T>> {
 
     private final T1 factory;
@@ -34,6 +39,11 @@ public class DatabaseController<T extends Documentable, T1 extends DocumentableF
         this.collection = collection;
     }
 
+    /**
+     * Get a list of all of the objects in the database.
+     * 
+     * @return list of type T
+     */
     public List<T> getList(){
         List<Document> docs = client.getDatabase(database).getCollection(collection).find().into(new ArrayList<Document>());
         List<T> rt = new ArrayList<>();
@@ -44,14 +54,24 @@ public class DatabaseController<T extends Documentable, T1 extends DocumentableF
         return rt;
     }
 
-    public void add(T media){
-        Document d = media.toDocument();
+    /**
+     * Add type T into the database.
+     * 
+     * @param t media type
+     */
+    public void add(T t){
+        Document d = t.toDocument();
         d.remove("_id");
         
         client.getDatabase(database).getCollection(collection).
-        updateOne(Filters.eq("_id", media.getUniqueId()), new Document("$set", d), new UpdateOptions().upsert(true));
+        updateOne(Filters.eq("_id", t.getUniqueId()), new Document("$set", d), new UpdateOptions().upsert(true));
     }
 
+    /**
+     * Update the database with the entries of the list.
+     * 
+     * @param list
+     */
     public void updateAll(List<T> list){
         for(T m : list){
             add(m);

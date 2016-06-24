@@ -4,6 +4,10 @@ import java.awt.AWTException;
 import java.awt.Point;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
+
+import org.bson.types.ObjectId;
+
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -15,30 +19,51 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import ninja.oakley.whisker.AbstractController;
 import ninja.oakley.whisker.Whisker;
-import ninja.oakley.whisker.hardware.ButtonController.ButtonListener;
+import ninja.oakley.whisker.data.Library;
 import ninja.oakley.whisker.hardware.Direction;
-import ninja.oakley.whisker.hardware.JoystickController.JoystickListener;
 import ninja.oakley.whisker.media.Media;
+import ninja.oakley.whisker.media.MediaType;
+import ninja.oakley.whisker.media.MovieMetadata;
 
 public class MenuSceneController extends AbstractController<VBox> {
 
     private final Whisker instance;
 
-    private final JoystickListener joystick = new JoystickTest();
-    private final ButtonListener button = new ButtonTest();
+    @FXML
+    private TilePane tilePane;
 
-    @FXML private TilePane tilePane;
+    @FXML
+    private SplitPane splitVert;
+    @FXML
+    private SplitPane splitHorizLeft;
+    @FXML
+    private ListView<Library> subMenuList;
 
-    @FXML private SplitPane splitVert;
-    @FXML private SplitPane splitHorizLeft;
-    @FXML private ListView<Library> subMenuList;
-
-    @FXML private Label status;
+    @FXML
+    private Label status;
 
     private Point currentSelection;
 
-    public MenuSceneController(Whisker instance){
+    public MenuSceneController(Whisker instance) {
         this.instance = instance;
+    }
+
+    private void initMedia() {
+
+        tilePane.getChildren().addAll(quickMedia("Creed", "/Users/oakley/Documents/java/workspace/Whisker/creed.png"),
+                quickMedia("Dino", "/Users/oakley/Documents/java/workspace/Whisker/dino.png"),
+                quickMedia("Goose", "/Users/oakley/Documents/java/workspace/Whisker/goose.png"),
+                quickMedia("Peanuts", "/Users/oakley/Documents/java/workspace/Whisker/peanuts.png"),
+                quickMedia("Pearl Jam", "/Users/oakley/Documents/java/workspace/Whisker/pj.png"));
+
+    }
+
+    private MediaImageView quickMedia(String title, String image) {
+        Media b1 = new Media(title, null, MediaType.MOVIE, new ObjectId());
+        b1.setMediaMetadata(new MovieMetadata(Paths.get(image), null));
+        MediaImageView b = new MediaImageView(b1);
+
+        return b;
     }
 
     @Override
@@ -51,12 +76,20 @@ public class MenuSceneController extends AbstractController<VBox> {
         getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                try{
+                try {
                     switch (event.getCode()) {
-                        case UP: moveCursor(Direction.TOP); break;
-                        case DOWN: moveCursor(Direction.BOTTOM); break;
-                        case LEFT: moveCursor(Direction.LEFT); break;
-                        case RIGHT: moveCursor(Direction.RIGHT); break;
+                        case UP:
+                            moveCursor(Direction.TOP);
+                            break;
+                        case DOWN:
+                            moveCursor(Direction.BOTTOM);
+                            break;
+                        case LEFT:
+                            moveCursor(Direction.LEFT);
+                            break;
+                        case RIGHT:
+                            moveCursor(Direction.RIGHT);
+                            break;
                         case SPACE:
                             try {
                                 instance.playMedia(getCurrentSelection());
@@ -67,18 +100,21 @@ public class MenuSceneController extends AbstractController<VBox> {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                             }
-                        default: break;
+                        default:
+                            break;
                     }
-                } catch(IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e) {
 
                 }
             }
         });
+
+        initMedia();
     }
 
-    private void moveCursor(Direction dir){
+    private void moveCursor(Direction dir) {
         int x = 0, y = 0;
-        switch(dir){
+        switch (dir) {
             case BOTTOM:
                 y++;
                 break;
@@ -92,36 +128,36 @@ public class MenuSceneController extends AbstractController<VBox> {
                 y--;
                 break;
             default:
-                throw new RuntimeException("No such direction.");    
+                throw new RuntimeException("No such direction.");
         }
 
         Point point;
-        if(currentSelection != null){
+        if (currentSelection != null) {
             point = new Point(currentSelection);
             point.translate(x, y);
         } else {
-            point = new Point(0,0);
+            point = new Point(0, 0);
         }
 
         moveCursor(point);
     }
 
-    private void moveCursor(Point point){
+    private void moveCursor(Point point) {
         moveCursor((int) point.getX(), (int) point.getY());
     }
 
-    private void moveCursor(int x, int y){
-        if(!checkPoint(x, y)){
+    private void moveCursor(int x, int y) {
+        if (!checkPoint(x, y)) {
             throw new IndexOutOfBoundsException("Out of coordinate range.");
         }
 
-        if(currentSelection != null){
+        if (currentSelection != null) {
             int prevIndex = getIndex((int) currentSelection.getX(), (int) currentSelection.getY());
             MediaImageView prevImage = (MediaImageView) tilePane.getChildren().get(prevIndex);
             prevImage.applyEffect(false);
         }
 
-        int newIndex = getIndex(x, y);    
+        int newIndex = getIndex(x, y);
         MediaImageView newImage = (MediaImageView) tilePane.getChildren().get(newIndex);
 
         newImage.applyEffect(true);
@@ -129,27 +165,27 @@ public class MenuSceneController extends AbstractController<VBox> {
         currentSelection = new Point(x, y);
     }
 
-    private Media getCurrentSelection(){
+    private Media getCurrentSelection() {
         return getSelection((int) currentSelection.getX(), (int) currentSelection.getY()).getMedia();
     }
 
-    private MediaImageView getSelection(int x, int y){
+    private MediaImageView getSelection(int x, int y) {
         return (MediaImageView) tilePane.getChildren().get(getIndex(x, y));
     }
 
-    private int getIndex(int x, int y){
+    private int getIndex(int x, int y) {
         return (y * getActualColumns()) + x;
     }
 
-    private int size(){
+    private int size() {
         return tilePane.getChildren().size();
     }
 
-    private boolean checkPoint(int x, int y){
-        return getIndex(x,y) < size() && y < getActualRows() && x < getActualColumns() && x >= 0 && y >= 0;
+    private boolean checkPoint(int x, int y) {
+        return getIndex(x, y) < size() && y < getActualRows() && x < getActualColumns() && x >= 0 && y >= 0;
     }
 
-    public void setStatus(String st){
+    public void setStatus(String st) {
         status.setText(st);
     }
 
@@ -175,42 +211,12 @@ public class MenuSceneController extends AbstractController<VBox> {
         return -1;
     }
 
-    private Object getField(Object obj, String st) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    private Object getField(Object obj, String st)
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         Field field = obj.getClass().getDeclaredField(st);
         field.setAccessible(true);
 
         return field.get(obj);
-    }
-
-    public JoystickListener getJoystickListener(){
-        return this.joystick;
-    }
-
-    private class JoystickTest implements JoystickListener {
-
-        @Override
-        public void execute(Direction dir) {
-            if(getRootNode().isVisible()){
-                moveCursor(dir);
-            }
-        }
-
-    }
-
-    public ButtonListener getButtonListener(){
-        return this.button;
-    }
-
-    private class ButtonTest implements ButtonListener {
-
-        @Override
-        public void execute() {
-            if(getRootNode().isVisible()){
-
-
-            }
-        }
-
     }
 
     @Override

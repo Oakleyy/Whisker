@@ -10,7 +10,13 @@ public final class WhiskerPlayer {
 
     private Process process;
     private Status status = Status.UNKNOWN;
-
+    
+    /**
+     * construct a new Builder from a media object.
+     * 
+     * @param media
+     * @return
+     */
     public static WhiskerPlayer.Builder newBuilder(Media media){
         return new WhiskerPlayer.Builder(media);
     }
@@ -21,6 +27,11 @@ public final class WhiskerPlayer {
         status = Status.READY;
     }
 
+    /**
+     * Play the movie.
+     * 
+     * @throws IOException
+     */
     public void play() throws IOException {
         switch(status){
             case LOADING:
@@ -40,6 +51,11 @@ public final class WhiskerPlayer {
         }
     }
 
+    /**
+     * Pause the movie.
+     * 
+     * @throws IOException
+     */
     public void pause() throws IOException{
         switch(status){
             case LOADING:
@@ -57,11 +73,20 @@ public final class WhiskerPlayer {
         }
     }
 
+    /**
+     * Destroy the instance. Becomes unusable.
+     * 
+     */
     public void dispose(){
         process.destroy();
         this.status = Status.DISPOSED;
     }
 
+    /**
+     * Get the status of the movie.
+     * 
+     * @return status
+     */
     public Status getStatus(){
         return this.status;
     }

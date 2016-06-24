@@ -8,6 +8,12 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
+/**
+ * Control a stepper motor easily with directions.
+ * 
+ * @author oakley
+ *
+ */
 public class StepperMotorController {
 
     private static final GpioController gpio = GpioFactory.getInstance();
@@ -17,6 +23,15 @@ public class StepperMotorController {
         this(pins[0], pins[1], pins[2], pins[3]);
     }
 
+    /**
+     * 
+     * Create a controller with the four pins used to control the stepper motor.
+     * 
+     * @param pin1 blue
+     * @param pin2 pink
+     * @param pin3 yellow
+     * @param pin4 orange
+     */
     public StepperMotorController(Pin pin1, Pin pin2, Pin pin3, Pin pin4){
         GpioPinDigitalOutput[] gpioPins = new GpioPinDigitalOutput[4];
         gpioPins[0] = gpio.provisionDigitalOutputPin(pin1, "blue/1", PinState.LOW);
@@ -31,10 +46,21 @@ public class StepperMotorController {
         motor.setStepSequence(StepSequence.getDefault().getSequence());
     }
 
+    /**
+     * Set the state of the motor.
+     * 
+     * @param state
+     */
     public void setMotorState(MotorState state){
         motor.setState(state);
     }
 
+    /**
+     * Turn the motor in a certain direction.
+     * 
+     * @param forward true if forward, false if backward
+     * @param millis time in millis
+     */
     public void turn(boolean forward, long millis){
         if(forward){
             motor.forward(millis);
@@ -43,6 +69,11 @@ public class StepperMotorController {
         }
     }
 
+    /**
+     * Set the sequence pattern to use.
+     * 
+     * @param seq
+     */
     public void setStepSequence(StepSequence seq){
         motor.setStepSequence(seq.getSequence());
     }

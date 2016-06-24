@@ -1,4 +1,4 @@
-package ninja.oakley.whisker.hardware;
+package ninja.oakley.whisker.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
